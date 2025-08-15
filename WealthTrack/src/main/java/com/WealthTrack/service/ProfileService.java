@@ -2,6 +2,10 @@ package com.WealthTrack.service;
 
 import java.util.UUID;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.WealthTrack.dto.ProfileDto;
@@ -16,6 +20,7 @@ public class ProfileService {
 	
 	private final ProfileRepository profileRepository;
 	private final EmailService emailService;
+	private final PasswordEncoder passwordEncoder;
 	
 	public ProfileDto registerProfile(ProfileDto profiledoDto)
 	{
@@ -40,7 +45,7 @@ public class ProfileService {
 				.id(profileDto.getId())
 				.fullName(profileDto.getFullName())
 				.email(profileDto.getEmail())
-				.password(profileDto.getPassword())
+				.password(passwordEncoder.encode(profileDto.getPassword()))
 				.profileImageUrl(profileDto.getProfileImageUrl())
 				.createdAt(profileDto.getCreatedAt())
 				.updatedAt(profileDto.getUpdatedAt())
@@ -69,6 +74,45 @@ public class ProfileService {
 	            })
 	            .orElse(false);  
 	}
+	
+	public boolean isAccountActive(String email)
+	{
+		return profileRepository.findByEmail(email)
+				.map(ProfileEntity::getIsActive)
+				.orElse(false);
+	}
+	
+	public ProfileEntity getCurrentProfile()
+	{
+	  Authentication authentication=	SecurityContextHolder.getContext().getAuthentication();
+	  return profileRepository.findByEmail(authentication.getName())
+			  .orElseThrow(()-> new UsernameNotFoundException("Profile not found with email:-"+ authentication.getName()));
+	
+	}
+	
+	public ProfileDto getPublicProfile(String email)
+	{
+		ProfileEntity currentUser=null;
+		if(email==null)
+		{
+			currentUser=getCurrentProfile();
+		}
+		else {
+			currentUser=profileRepository.findByEmail(email)
+					.orElseThrow(()-> new UsernameNotFoundException("Profile not found with email"+email));
+		}
+		
+		return ProfileDto.builder()
+				.id(currentUser.getId())
+				.fullName(currentUser.getFullName())
+				.email(currentUser.getEmail())
+				.profileImageUrl(currentUser.getProfileImageUrl())
+				.createdAt(currentUser.getCreatedAt())
+				.updatedAt(currentUser.getUpdatedAt())
+				.build();
+	}
+	
+	
 
 
 }
