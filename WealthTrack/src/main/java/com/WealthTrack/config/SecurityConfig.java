@@ -2,6 +2,9 @@ package com.WealthTrack.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -12,6 +15,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.WealthTrack.service.AppUserDetailsService;
+
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
@@ -19,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
+	
+	private final AppUserDetailsService appUserDetailsService;
     
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -26,7 +34,7 @@ public class SecurityConfig {
     
     	httpSecurity.cors(Customizer.withDefaults())  // Enable CORS
                 .csrf(AbstractHttpConfigurer::disable)  // Disable CSRF
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/status","/health", "/register", "/login").permitAll()
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/status","/health", "/register", "/login","/activate").permitAll()
                 		.anyRequest().authenticated())
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
                return httpSecurity.build(); // Build the security chain
@@ -57,5 +65,14 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         
         return source;
+    }
+    
+    @Bean
+    public AuthenticationManager authenticationManager()
+    {
+    	DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+    	authenticationProvider.setUserDetailsService(appUserDetailsService);
+    	authenticationProvider.setPasswordEncoder(passwordEncoder());
+    	return new ProviderManager(authenticationProvider);
     }
 }
