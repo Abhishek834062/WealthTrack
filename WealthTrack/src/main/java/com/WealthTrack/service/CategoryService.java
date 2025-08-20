@@ -1,5 +1,8 @@
 package com.WealthTrack.service;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -29,6 +32,36 @@ public class CategoryService {
 
 		return toDTO(newCategory);
 	}
+	
+	public List<CategoryDTO> getCategoriesForCurrentUser()
+	{
+		ProfileEntity currentProfile = profileService.getCurrentProfile();
+		List<CategoryEntity> categories = categoryRepository.findByProfileId(currentProfile.getId());
+		
+		return categories.stream().map(this::toDTO).toList();
+	}
+	
+	public List<CategoryDTO> getCategoriesByTypeForCurrentUser(String type)
+	{
+		ProfileEntity currentProfile = profileService.getCurrentProfile();
+		List<CategoryEntity> categories = categoryRepository.findByTypeAndProfileId(type, currentProfile.getId());
+		
+		return categories.stream().map(this::toDTO).toList();
+	}
+	
+	public CategoryDTO updateCategories(Long categoryId,CategoryDTO dto)
+	{
+		ProfileEntity currentProfile = profileService.getCurrentProfile();
+		CategoryEntity existingCategories = categoryRepository.findByIdAndProfileId(categoryId, currentProfile.getId())
+				.orElseThrow(()->new RuntimeException("Categories not found"));
+		existingCategories.setName(dto.getName());
+		existingCategories.setType(dto.getType());
+		existingCategories.setIcon(dto.getIcon());
+		existingCategories = categoryRepository.save(existingCategories);
+		return toDTO(existingCategories);
+	}
+	
+	
 
 	// helper method
 	private CategoryEntity toEntity(CategoryDTO categoryDTO, ProfileEntity profile) {
