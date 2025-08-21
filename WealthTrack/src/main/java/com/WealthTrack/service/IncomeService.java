@@ -1,9 +1,14 @@
 package com.WealthTrack.service;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
+
 
 import com.WealthTrack.dto.IncomeDTO;
 import com.WealthTrack.entity.CategoryEntity;
+
 import com.WealthTrack.entity.IncomeEntity;
 import com.WealthTrack.entity.ProfileEntity;
 import com.WealthTrack.repository.CategoryRepository;
@@ -29,6 +34,18 @@ public class IncomeService {
 	
 	return toDto(newExpense);
 }
+	//retrive Income
+		public List<IncomeDTO> getCurrentMonthIncomeForCurrentUser()
+		{
+			ProfileEntity currentProfile = profileService.getCurrentProfile();
+			
+			LocalDate now=LocalDate.now();
+			LocalDate startDate=now.withDayOfMonth(1);
+			LocalDate endDate=now.withDayOfMonth(now.lengthOfMonth());
+			List<IncomeEntity> list = incomeRepository.findByProfileIdAndDateBetween(currentProfile.getId(), startDate, endDate);
+			
+			return list.stream().map(this::toDto).toList();
+		}
 
 //helper methods
 public IncomeEntity toEntity(IncomeDTO incomeDTO, ProfileEntity profileEntity, CategoryEntity categoryEntity)

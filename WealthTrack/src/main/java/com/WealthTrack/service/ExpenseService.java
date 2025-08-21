@@ -1,6 +1,8 @@
 package com.WealthTrack.service;
 
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.List;
+
 
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,21 @@ public class ExpenseService {
 		
 		return toDto(newExpense);
 	}
+	
+	//retrive expenses
+	public List<ExpenseDTO> getCurrentMonthExpenseForCurrentUser()
+	{
+		ProfileEntity currentProfile = profileService.getCurrentProfile();
+		
+		LocalDate now=LocalDate.now();
+		LocalDate startDate=now.withDayOfMonth(1);
+		LocalDate endDate=now.withDayOfMonth(now.lengthOfMonth());
+		List<ExpenseEntity> list = expenseRepository.findByProfileIdAndDateBetween(currentProfile.getId(), startDate, endDate);
+		
+		return list.stream().map(this::toDto).toList();
+	}
+	
+	
 	
 	//helper methods
 	public ExpenseEntity toEntity(ExpenseDTO expenseDTO, ProfileEntity profileEntity, CategoryEntity categoryEntity)
