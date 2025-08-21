@@ -2,6 +2,7 @@ package com.WealthTrack.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -45,6 +46,20 @@ public class IncomeService {
 			List<IncomeEntity> list = incomeRepository.findByProfileIdAndDateBetween(currentProfile.getId(), startDate, endDate);
 			
 			return list.stream().map(this::toDto).toList();
+		}
+		
+		//delete income
+		public void deleteIncome(Long incomeId)
+		{
+			ProfileEntity currentProfile = profileService.getCurrentProfile();
+		    IncomeEntity entity = incomeRepository.findById(incomeId)
+		    		.orElseThrow(()-> new RuntimeException("Expense Not found"));
+		    
+		    if (!entity.getProfile().getId().equals(currentProfile.getId())) {
+		        throw new RuntimeException("Unauthorized to delete this income");
+		    }
+		   
+		    incomeRepository.delete(entity);
 		}
 
 //helper methods
