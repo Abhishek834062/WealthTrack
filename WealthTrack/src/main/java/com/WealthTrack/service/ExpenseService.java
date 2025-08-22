@@ -1,14 +1,16 @@
 package com.WealthTrack.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.WealthTrack.dto.ExpenseDTO;
+
 import com.WealthTrack.entity.CategoryEntity;
 import com.WealthTrack.entity.ExpenseEntity;
-import com.WealthTrack.entity.IncomeEntity;
+
 import com.WealthTrack.entity.ProfileEntity;
 import com.WealthTrack.repository.CategoryRepository;
 import com.WealthTrack.repository.ExpenseRepository;
@@ -58,11 +60,31 @@ public class ExpenseService {
 
 		expenseRepository.delete(entity);
 	}
+	//get top 5 expense for current user
+	public List<ExpenseDTO> getLatest5ExpenseForCurrentUser()
+	{
+		ProfileEntity currentProfile = profileService.getCurrentProfile();
+		List<ExpenseEntity> list=expenseRepository.findTop5ByProfileIdOrderByDateDesc(currentProfile.getId());
+		
+		return  list.stream().map(this::toDto).toList();
+		}
+	
+	//get total expense
+	public BigDecimal getTotalExpenseForCurrentUser()
+	{
+		ProfileEntity currentProfile = profileService.getCurrentProfile();
+	    BigDecimal totalExpense = expenseRepository.findTotalExpenseByProfileId(currentProfile.getId());
+	    return totalExpense!=null?totalExpense:BigDecimal.ZERO;
+	}
 
 	// helper methods
 	public ExpenseEntity toEntity(ExpenseDTO expenseDTO, ProfileEntity profileEntity, CategoryEntity categoryEntity) {
-		return ExpenseEntity.builder().name(expenseDTO.getName()).icon(expenseDTO.getIcon())
-				.amount(expenseDTO.getAmount()).date(expenseDTO.getDate()).category(categoryEntity)
+		return ExpenseEntity.builder()
+				.name(expenseDTO.getName())
+				.icon(expenseDTO.getIcon())
+				.amount(expenseDTO.getAmount())
+				.date(expenseDTO.getDate())
+				.category(categoryEntity)
 				.profile(profileEntity).build();
 	}
 
@@ -71,7 +93,7 @@ public class ExpenseService {
 				.icon(expenseEntity.getIcon()).amount(expenseEntity.getAmount()).date(expenseEntity.getDate())
 				.createdAt(expenseEntity.getCreatedAt()).updatedAt(expenseEntity.getUpdatedAt())
 				.categoryId(expenseEntity.getCategory() != null ? expenseEntity.getCategory().getId() : null)
-				.categoryName(expenseEntity.getName() != null ? expenseEntity.getName() : null).build();
+				.categoryName(expenseEntity.getCategory() != null ? expenseEntity.getCategory().getName() : null).build();
 	}
 
 }

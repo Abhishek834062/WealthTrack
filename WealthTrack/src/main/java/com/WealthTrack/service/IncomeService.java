@@ -1,8 +1,9 @@
 package com.WealthTrack.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
+
 
 import org.springframework.stereotype.Service;
 
@@ -60,6 +61,23 @@ public class IncomeService {
 		    }
 		   
 		    incomeRepository.delete(entity);
+		}
+		
+		//get top 5 income for current user
+		public List<IncomeDTO> getLatest5IncomeForCurrentUser()
+		{
+			ProfileEntity currentProfile = profileService.getCurrentProfile();
+			List<IncomeEntity> list=incomeRepository.findTop5ByProfileIdOrderByDateDesc(currentProfile.getId());
+			
+			return  list.stream().map(this::toDto).toList();
+			}
+		
+		//get total income
+		public BigDecimal getTotalIncomeForCurrentUser()
+		{
+			ProfileEntity currentProfile = profileService.getCurrentProfile();
+		    BigDecimal totalIncome = incomeRepository.findTotalIncomeByProfileId(currentProfile.getId());
+		    return totalIncome!=null?totalIncome:BigDecimal.ZERO;
 		}
 
 //helper methods

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.WealthTrack.dto.ExpenseDTO;
-import com.WealthTrack.dto.IncomeDTO;
 import com.WealthTrack.service.ExpenseService;
 
 import lombok.RequiredArgsConstructor;
