@@ -4,9 +4,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
 
 import com.WealthTrack.dto.IncomeDTO;
 import com.WealthTrack.entity.CategoryEntity;
@@ -79,6 +78,14 @@ public class IncomeService {
 		    BigDecimal totalIncome = incomeRepository.findTotalIncomeByProfileId(currentProfile.getId());
 		    return totalIncome!=null?totalIncome:BigDecimal.ZERO;
 		}
+		//filter income
+		public List<IncomeDTO> filterIncome(LocalDate startDate,LocalDate endDate,String keyword,Sort sort)
+		{
+			ProfileEntity currentProfile = profileService.getCurrentProfile();
+			List<IncomeEntity> list=incomeRepository.findByProfileIdAndDateBetweenAndNameContainingIgnoreCase(currentProfile.getId(), startDate, endDate, keyword, sort);
+			
+		   return list.stream().map(this::toDto).toList();
+		}
 
 //helper methods
 public IncomeEntity toEntity(IncomeDTO incomeDTO, ProfileEntity profileEntity, CategoryEntity categoryEntity)
@@ -108,6 +115,5 @@ public IncomeDTO toDto(IncomeEntity incomeEntity)
 			.build();
 }
 
-	
 
 }

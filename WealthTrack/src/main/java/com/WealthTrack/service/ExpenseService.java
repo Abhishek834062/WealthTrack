@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.WealthTrack.dto.ExpenseDTO;
@@ -76,6 +77,17 @@ public class ExpenseService {
 	    BigDecimal totalExpense = expenseRepository.findTotalExpenseByProfileId(currentProfile.getId());
 	    return totalExpense!=null?totalExpense:BigDecimal.ZERO;
 	}
+	
+	//filter Expense
+	public List<ExpenseDTO> filterExpense(LocalDate startDate,LocalDate endDate,String keyword,Sort sort)
+	{
+		ProfileEntity currentProfile = profileService.getCurrentProfile();
+		List<ExpenseEntity> list=expenseRepository.findByProfileIdAndDateBetweenAndNameContainingIgnoreCase(currentProfile.getId(), startDate, endDate, keyword, sort);
+		
+	   return list.stream().map(this::toDto).toList();
+	}
+	
+	
 
 	// helper methods
 	public ExpenseEntity toEntity(ExpenseDTO expenseDTO, ProfileEntity profileEntity, CategoryEntity categoryEntity) {
