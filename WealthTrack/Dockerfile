@@ -1,10 +1,11 @@
+FROM maven:3.9.2-eclipse-temurin-17 AS build
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
+
 FROM eclipse-temurin:17-jre
 WORKDIR /app
-# Copy target jar into container (rename as app.jar)
-COPY target/WealthTrack-0.0.1-SNAPSHOT.jar wealthTrack-v1.0.jar
-
-# Expose port (default Spring Boot port)
+COPY --from=build /app/target/WealthTrack-0.0.1-SNAPSHOT.jar wealthTrack-v1.0.jar
 EXPOSE 8080
-
-# Start command
 ENTRYPOINT ["java", "-jar", "wealthTrack-v1.0.jar"]
