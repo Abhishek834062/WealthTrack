@@ -3,6 +3,7 @@ package com.WealthTrack.service;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -31,6 +32,8 @@ public class ProfileService {
 	private final  AuthenticationManager authenticationManager;
 	private final JwtUtil jwtUtil;
 
+	@Value("${app.activation.url}")
+	private String activationUrl;
    
 	public ProfileDto registerProfile(ProfileDto profiledoDto)
 	{
@@ -39,7 +42,7 @@ public class ProfileService {
 		newProfile = profileRepository.save(newProfile);
 	
 		//send activation email
-		String activationLink="http://localhost:8080/api/v1.0/activate?token="+newProfile.getActivationToken();
+		String activationLink=activationUrl+"/api/v1.0/activate?token="+newProfile.getActivationToken();
 		String subject="Activate your WeatlhTrack account";
 		String body="Click on the following link to activate your account:-"+activationLink;
 		emailService.sendEmail(newProfile.getEmail(), subject, body);

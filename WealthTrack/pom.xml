@@ -11,7 +11,7 @@
 	<groupId>com.JustShek</groupId>
 	<artifactId>WealthTrack</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<name>WealthTrack</name>
 	<description>A Spring Boot backend for personal finance management, including income &amp; expense tracking, budgeting, and financial reports</description>
 	<url/>
@@ -64,16 +64,8 @@
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-tomcat</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
+		
+		
 		
 		<dependency>
     <groupId>org.springframework.boot</groupId>
@@ -98,6 +90,12 @@
     <version>0.11.5</version>
     <scope>runtime</scope>
 </dependency>
+<dependency>
+    <groupId>org.postgresql</groupId>
+    <artifactId>postgresql</artifactId>
+    <scope>runtime</scope>
+</dependency>
+
 
 
 	</dependencies>
