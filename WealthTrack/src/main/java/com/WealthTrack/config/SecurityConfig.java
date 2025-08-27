@@ -53,8 +53,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         
         // Allowed Origins (Frontend URLs)
-        configuration.setAllowedOrigins(List.of( "http://localhost:5173",   // vite frontend
-    "http://localhost:3000"    // agar kabhi use karo));
+        configuration.setAllowedOrigins(List.of( "http://localhost:5173", "http://localhost:3000"));
         
         // Allowed HTTP Methods
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
