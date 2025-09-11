@@ -53,7 +53,9 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         
         // Allowed Origins (Frontend URLs)
-        configuration.setAllowedOrigins(List.of( "http://localhost:5173", "http://localhost:3000"));
+        configuration.setAllowedOrigins(List.of(  "http://localhost:5173",
+    "http://localhost:3000",
+    "https://wealthtrack24.netlify.app"));
         
         // Allowed HTTP Methods
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
